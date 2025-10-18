@@ -1,3 +1,4 @@
+// 공용 유틸 함수
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
