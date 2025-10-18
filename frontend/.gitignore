@@ -60,7 +60,6 @@ turbo/
 .turbo/
 
 # Lock files (optional if managed centrally)
-pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
