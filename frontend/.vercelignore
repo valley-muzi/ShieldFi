@@ -1,0 +1,38 @@
+# Node modules & build output
+node_modules
+.next
+out
+dist
+
+# Environment & logs
+.env
+.env.*
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Git / Config
+.git/
+.gitignore
+.vercel/
+.vercelignore
+
+# Local test & scripts
+scripts/
+test/
+tests/
+__tests__/
+coverage/
+tmp/
+temp/
+
+# Misc
+*.local
+*.bak
+*.old
