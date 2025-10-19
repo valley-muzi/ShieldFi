@@ -52,4 +52,8 @@ export const env = {
   POLICY_CONTRACT: process.env.POLICY_CONTRACT ?? '',  // 보험 정책 스마트 컨트랙트 주소
   CLAIM_CONTRACT: process.env.CLAIM_CONTRACT ?? '',    // 보험금 청구 스마트 컨트랙트 주소
   
+  // Blockscout API 설정
+  BLOCKSCOUT_URL: process.env.BLOCKSCOUT_URL ?? 'https://eth.blockscout.com',  // Blockscout API Base URL
+  BLOCKSCOUT_API_KEY: process.env.BLOCKSCOUT_API_KEY ?? '',                    // Blockscout API 키 (선택사항)
+  
 };
