@@ -1,6 +1,6 @@
 "use client";
+import PolicyDetailPage from "@/features/insurance/components/products/PolicyDetailPage";
 import { useSearchParams } from "next/navigation";
-import PolicyDetailPage from "@/components/products/PolicyDetailPage";
 
 export default function Success() {
   const searchParams = useSearchParams();

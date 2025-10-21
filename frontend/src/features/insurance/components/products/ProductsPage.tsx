@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/common/button";
-import { Card } from "@/components/common/card";
+import { Button } from "@/features/common/components/button";
+import { Card } from "@/features/common/components/card";
 import { Shield, Check } from "lucide-react";
 import { motion } from "framer-motion";
 

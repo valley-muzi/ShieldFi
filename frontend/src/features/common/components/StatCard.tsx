@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { Card } from "@/components/common/card";
-import AnimatedCounter from "@/components/common/AnimatedCounter";
+import { Card } from "@/features/common/components/card";
+import AnimatedCounter from "@/features/common/components/AnimatedCounter";
 import {
   ResponsiveContainer,
   Tooltip,

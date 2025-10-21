@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card } from "@/components/common/card";
+import { Card } from "@/features/common/components/card";
 import { Calendar, Shield, DollarSign, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 

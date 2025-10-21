@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Button } from "@/components/common/button";
+import { Button } from "@/features/common/components/button";
 import { Shield, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import PolicyCard from "./PolicyCard";

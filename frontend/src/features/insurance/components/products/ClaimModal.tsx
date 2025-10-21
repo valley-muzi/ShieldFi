@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "@/components/common/button";
-import { Input } from "@/components/common/input";
+import { Button } from "@/features/common/components/button";
+import { Input } from "@/features/common/components/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/common/dialog";
+} from "@/features/common/components/dialog";
 import { Shield, Search, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 

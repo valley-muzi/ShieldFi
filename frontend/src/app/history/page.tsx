@@ -1,7 +1,7 @@
 "use client";
+import ClaimModal from "@/features/insurance/components/products/ClaimModal";
+import PolicyDetailPage from "@/features/insurance/components/products/PolicyDetailPage";
 import React, { useState } from "react";
-import PolicyDetailPage from "@/components/products/PolicyDetailPage";
-import ClaimModal from "@/components/products/ClaimModal";
 
 export default function PolicyHistoryPage() {
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);

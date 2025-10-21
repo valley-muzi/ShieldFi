@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/common/button";
-import ParticleBackground from "@/components/effects/ParticleBackground";
-import StatCard from "@/components/common/StatCard";
+import { Button } from "@/features/common/components/button";
+import ParticleBackground from "@/features/common/effects/ParticleBackground";
+import StatCard from "@/features/common/components/StatCard";
 
 export default function Home() {
   const router = useRouter();
@@ -32,14 +32,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={handleViewProducts}
-              className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-chart-2)] hover:from-[color-mix(in_oklab,var(--color-primary),black_10%)] hover:to-[color-mix(in_oklab,var(--color-chart-2),black_10%)] text-primary-foreground px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+              className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
               Browse Insurance Products
             </Button>
             <Button
               onClick={handleViewHistory}
               variant="outline"
-              className="border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-primary-foreground px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
               My Policy History
             </Button>
@@ -58,7 +58,7 @@ export default function Home() {
               { month: "May", value: 40000000 },
               { month: "Jun", value: 45678900 },
             ]}
-            color="var(--color-chart-1)"
+            color="#3B82F6"
           />
           <StatCard
             title="Total Policyholders"
@@ -72,7 +72,7 @@ export default function Home() {
               { month: "May", value: 11500 },
               { month: "Jun", value: 12567 },
             ]}
-            color="var(--color-chart-2)"
+            color="#10B981"
           />
           <StatCard
             title="Total Deposits"
@@ -86,7 +86,7 @@ export default function Home() {
               { month: "May", value: 115000000 },
               { month: "Jun", value: 128500000 },
             ]}
-            color="var(--color-chart-3)"
+            color="#F59E0B"
           />
         </div>
       </main>

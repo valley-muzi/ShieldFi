@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Card } from "@/components/common/card";
+import { Card } from "@/features/common/components/card";
 import { Shield, Award } from "lucide-react";
 import { motion } from "framer-motion";
 
