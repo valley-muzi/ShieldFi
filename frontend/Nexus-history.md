@@ -109,18 +109,33 @@ src/features/nexus/
    - 앱 전체에 nexus 상태 제공
    - Header와 모든 페이지에서 nexus 상태 접근 가능
 
+8. **보험 가입 결제 플로우 구현** (2024-12-19)
+   - PaymentModal: 결제 방식 선택 모달 (직접/브릿지/스왑)
+   - BridgePayment: 브릿지 결제 컴포넌트 (진행 상태 표시)
+   - SwapPayment: 스왑 결제 컴포넌트 (토큰 교환)
+   - ProductsPage 통합: 기존 플로우에 결제 모달 추가
+
+9. **nexus-widgets 실제 활용** (2024-12-19)
+   - BridgeButton: 실제 nexus-widgets BridgeButton 사용
+   - TransferButton: 실제 nexus-widgets TransferButton 사용
+   - PaymentModal: 선택한 방식에 따른 컴포넌트 렌더링
+   - 도메인별 문서 생성: bridge-feature.md, swap-feature.md, payment-flow.md
+
 ### 🔄 진행 중인 작업
 - 없음
 
 ### 📋 다음 단계 작업
+1. **nexus-widgets 설치 및 통합**
+   - 실제 nexus-widgets 라이브러리 설치
+   - BridgeButton, TransferButton 컴포넌트 활용
 
-3. **브릿지 기능 구현**
-   - `src/features/bridge/` 디렉토리 활용
-   - nexus SDK를 사용한 브릿지 컴포넌트 구현
+2. **실제 트랜잭션 테스트**
+   - testnet에서 브릿지/스왑 기능 테스트
+   - 지갑 연결 상태에서 실제 트랜잭션 실행
 
-4. **스왑 기능 구현**
-   - `src/features/swap/` 디렉토리 활용
-   - nexus SDK를 사용한 스왑 컴포넌트 구현
+3. **에러 처리 개선**
+   - 트랜잭션 실패 시 사용자 피드백
+   - 네트워크 오류 처리
 
 ## 🛠️ 기술 스택
 
@@ -155,22 +170,99 @@ src/features/nexus/
 
 ## 🔗 관련 파일
 
-### 기존 파일 (수정 필요)
-- `src/features/common/components/Header.tsx`: ConnectButton import 수정 필요
-- `src/app/layout.tsx`: NexusProvider 추가 필요
+### 기존 파일 (수정 완료)
+- `src/features/common/components/Header.tsx`: 이미 올바른 ConnectButton 사용 중
+- `src/app/layout.tsx`: NexusProvider 추가 완료
 
 ### 새로 생성된 파일
 - `src/features/nexus/providers/NexusProvider.tsx`
 - `src/features/nexus/hooks/useNexus.ts`
-- `src/features/nexus/components/ConnectButton.tsx`
 - `src/features/nexus/types/nexus.d.ts`
+- `src/features/insurance/components/products/PaymentModal.tsx`
+- `src/features/bridge/components/BridgePayment.tsx`
+- `src/features/swap/components/SwapPayment.tsx`
+
+### 수정된 파일
+- `src/features/wallet/components/ConnectButton.tsx` (nexus Provider 기반으로 리팩토링)
+- `src/app/layout.tsx` (NexusProvider 추가)
+- `src/features/insurance/components/products/ProductsPage.tsx` (결제 플로우 통합)
 
 ## 📊 작업 통계
-- **생성된 파일**: 4개
-- **구현된 컴포넌트**: 1개 (ConnectButton)
+- **생성된 파일**: 7개
+- **구현된 컴포넌트**: 4개 (ConnectButton, PaymentModal, BridgePayment, SwapPayment)
 - **구현된 훅**: 4개 (useNexus, useNexusInitialized, useWalletConnected, useNexusSDK)
 - **정의된 타입**: 8개
-- **완료된 기능**: 지갑 연결/해제, nexus SDK 관리
+- **완료된 기능**: 지갑 연결/해제, nexus SDK 관리, 보험 가입 결제 플로우
+
+## 🔍 Provider 아키텍처 분석
+
+### 우리가 만든 NexusProvider vs nexus-widgets NexusProvider
+
+#### **1. 우리가 만든 NexusProvider**
+**위치**: `src/features/nexus/providers/NexusProvider.tsx`
+
+**특징:**
+- **직접 구현**: nexus-core SDK를 직접 래핑
+- **커스텀 기능**: 우리만의 상태 관리 로직
+- **지갑 이벤트 감지**: accountsChanged, chainChanged 처리
+- **상태 관리**: isConnected, walletAddress, provider 등
+
+**API:**
+```typescript
+const { isConnected, walletAddress, connect, disconnect, sdk } = useNexus();
+```
+
+#### **2. nexus-widgets의 NexusProvider**
+**위치**: `@avail-project/nexus-widgets`
+
+**특징:**
+- **공식 구현**: nexus 팀에서 제공하는 표준 Provider
+- **위젯 최적화**: BridgeButton, TransferButton과 완벽 호환
+- **자동 초기화**: 위젯 사용 시 자동으로 SDK 초기화
+- **표준 API**: nexus-widgets의 표준 인터페이스
+
+**API:**
+```typescript
+const { provider, setProvider, sdk, isSdkInitialized } = useNexus();
+```
+
+#### **3. 핵심 차이점**
+
+| 구분 | 우리 Provider | nexus-widgets Provider |
+|------|---------------|----------------------|
+| **목적** | nexus SDK 직접 제어 | 위젯 사용 최적화 |
+| **호환성** | BridgeButton, TransferButton과 호환 안됨 | 모든 위젯과 완벽 호환 |
+| **기능 범위** | 더 많은 커스텀 기능 | 위젯 사용에 최적화 |
+| **상태 관리** | isConnected, walletAddress 등 | provider, setProvider 등 |
+| **초기화** | 수동 초기화 필요 | 위젯 사용 시 자동 초기화 |
+
+#### **4. 현재 상황 분석**
+
+**nexus-widgets 사용 시:**
+- **BridgeButton, TransferButton 활용**: 위젯으로 모든 기능 구현
+- **nexus-widgets Provider**: 위젯과 완벽 호환
+- **우리 Provider**: 중복 기능, 불필요
+
+**우리 Provider가 필요한 경우:**
+1. **직접 SDK 제어**: nexus SDK를 직접 사용하고 싶을 때
+2. **커스텀 기능**: 우리만의 특별한 기능이 필요할 때
+3. **위젯 없이 사용**: BridgeButton, TransferButton 없이 직접 구현할 때
+
+#### **5. 권장사항**
+
+**현재 상황:**
+- **nexus-widgets 사용**: 위젯으로 모든 기능 구현
+- **nexus-widgets Provider**: 위젯과 완벽 호환
+- **우리 Provider**: 중복 기능이므로 불필요
+
+**정리 방안:**
+1. **우리 Provider 삭제**: 중복 기능이므로 불필요
+2. **nexus-widgets Provider 유지**: 위젯과 완벽 호환
+3. **위젯 기반 개발**: BridgeButton, TransferButton 활용
+
+**결론:**
+- **우리가 만든 Provider는 현재 필요 없습니다!**
+- **nexus-widgets의 Provider가 모든 기능을 제공하므로 우리 Provider는 삭제해도 됩니다.**
 
 ---
 *마지막 업데이트: 2024-12-19*

@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/features/common/components/button";
 import { Card } from "@/features/common/components/card";
 import { Shield, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import PaymentModal from "./PaymentModal";
 
 const insuranceProducts = [
   {
@@ -59,15 +60,23 @@ const insuranceProducts = [
 
 export default function ProductsPage() {
   const router = useRouter();
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  const handlePurchase = (policy: Record<string, string>) => {
+  const handlePurchase = (product: any) => {
+    setSelectedProduct(product);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setIsPaymentModalOpen(false);
     // 정책 정보를 URL 파라미터로 전달하여 success 페이지로 이동
     const params = new URLSearchParams({
-      id: policy.id,
-      type: policy.type,
-      coverage: policy.coverage,
-      premium: policy.premium,
-      duration: policy.duration,
+      id: `POL-${Date.now()}-${selectedProduct.id}`,
+      type: selectedProduct.name,
+      coverage: selectedProduct.coverage,
+      premium: selectedProduct.premium,
+      duration: "1 year",
     });
 
     router.push(`/success?${params.toString()}`);
@@ -170,15 +179,7 @@ export default function ProductsPage() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Button
-                      onClick={() =>
-                        handlePurchase({
-                          id: `POL-${Date.now()}-${product.id}`,
-                          type: product.name,
-                          coverage: product.coverage,
-                          premium: product.premium,
-                          duration: "1 year",
-                        })
-                      }
+                      onClick={() => handlePurchase(product)}
                       className={`w-full bg-gradient-to-r ${product.color} hover:opacity-90 text-white py-6 rounded-lg transition-all duration-300 cursor-pointer`}
                     >
                       Purchase Insurance
@@ -190,6 +191,16 @@ export default function ProductsPage() {
           </div>
         </div>
       </main>
+
+      {/* Payment Modal */}
+      {selectedProduct && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          product={selectedProduct}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 }

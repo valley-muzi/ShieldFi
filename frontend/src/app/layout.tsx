@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/features/common/components/Header";
-import { NexusProvider } from "@/features/nexus/providers/NexusProvider";
+import { NexusProvider } from '@avail-project/nexus-widgets';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NexusProvider>
+        <NexusProvider
+          config={{
+            debug: false,
+            network: 'testnet'
+          }}
+        >
           <Header />
           {children}
         </NexusProvider>

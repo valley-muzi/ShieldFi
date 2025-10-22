@@ -2,15 +2,16 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/features/common/components/button';
-import { useNexus } from '@/features/nexus/hooks/useNexus';
+import { useNexus } from '@avail-project/nexus-widgets';
 
 interface ConnectButtonProps {
   className?: string;
 }
 
 export default function ConnectButton({ className }: ConnectButtonProps) {
-  const { isConnected, connect, disconnect } = useNexus();
+  const { provider, setProvider } = useNexus();
   const [isLoading, setIsLoading] = useState(false);
+  const isConnected = !!provider;
 
   const onClick = async () => {
     try {
@@ -18,7 +19,7 @@ export default function ConnectButton({ className }: ConnectButtonProps) {
       
       if (isConnected) {
         // 연결 해제
-        await disconnect();
+        setProvider(undefined as any);
       } else {
         // 지갑 연결
         const eth = (window as any)?.ethereum;
@@ -27,7 +28,7 @@ export default function ConnectButton({ className }: ConnectButtonProps) {
           return;
         }
         
-        await connect(eth);
+        await setProvider(eth);
       }
     } catch (error) {
       console.error('지갑 연결/해제 실패:', error);
