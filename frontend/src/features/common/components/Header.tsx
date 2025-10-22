@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Button } from "@/features/common/components/button";
 import { Shield } from "lucide-react";
+import ConnectButton from "@/features/wallet/components/ConnectButton";
 
 export default function Header() {
   const router = useRouter();
@@ -26,12 +26,9 @@ export default function Header() {
         <Shield className="w-8 h-8 text-blue-600" />
         <span className="text-2xl text-foreground">ShieldFi</span>
       </button>
-      <Button
-        onClick={handleConnectWallet}
+      <ConnectButton
         className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white px-6 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
-      >
-        Connect Wallet
-      </Button>
+      />
     </header>
   );
 }
