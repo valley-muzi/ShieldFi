@@ -1,0 +1,9 @@
+{
+  "solidity.remappings": [
+    "forge-std/=foundry/lib/forge-std/src/",
+    "openzeppelin-contracts/=foundry/lib/openzeppelin-contracts/"
+  ],
+  "solidity.compileUsingRemoteVersion": "v0.8.24+commit.e11b9ed9",
+  "solidity.packageDefaultDependenciesDirectory": "foundry/lib",
+  "solidity.packageDefaultDependenciesContractsDirectory": "contracts"
+}

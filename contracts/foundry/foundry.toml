@@ -6,4 +6,7 @@ libs = ["lib"]
 solc_version = "0.8.24"
 optimizer = true
 optimizer_runs = 200
-# 필요시 remappings 추가 가능
+remappings = [
+  "forge-std/=lib/forge-std/src/",
+  "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+]

@@ -7,7 +7,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "outDir": "dist",
-    "types": ["node"]
+    "types": ["node", "hardhat"]
   },
   "include": ["./scripts", "./test", "./hardhat.config.ts"]
 }
