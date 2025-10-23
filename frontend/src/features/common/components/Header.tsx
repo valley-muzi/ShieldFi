@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/features/common/components/button";
 import { Shield } from "lucide-react";
 
 export default function Header() {
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleGoHome = () => {
     router.push("/");
