@@ -18,7 +18,7 @@ import { errorHandler } from './middlewares/error.middleware.js';
  */
 
 // CORS 설정 (모든 도메인 허용, 자격 증명 불필요)
-app.use(cors({ origin: '*', credentials: false }));
+//app.use(cors({ origin: '*', credentials: false }));
 
 // Express 애플리케이션 인스턴스 생성
 const app = express();
