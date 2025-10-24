@@ -31,8 +31,7 @@ dotenv.config();
  * @property {string} RPC_URL - Web3 RPC URL (기본값: '')
  * @property {number} CHAIN_ID - 블록체인 체인 ID (기본값: 0)
  * @property {string} WALLET_PK - 서버 지갑 개인키 (기본값: '')
- * @property {string} POLICY_CONTRACT - 보험 정책 컨트랙트 주소 (기본값: '')
- * @property {string} CLAIM_CONTRACT - 보험금 청구 컨트랙트 주소 (기본값: '')
+ * @property {string} PAYOUT_CONTRACT_ADDRESS - Payout 컨트랙트 주소 (기본값: '')
  */
 export const env = {
   // 서버 설정
@@ -48,8 +47,7 @@ export const env = {
   // Web3 블록체인 설정
   RPC_URL: process.env.RPC_URL ?? '',                  // 이더리움 RPC 노드 URL
   CHAIN_ID: Number(process.env.CHAIN_ID ?? 0),         // 블록체인 네트워크 ID
-  WALLET_PK: process.env.WALLET_PK ?? '',              // 서버 지갑 개인키 (보험금 지급용)
-  POLICY_CONTRACT: process.env.POLICY_CONTRACT ?? '',  // 보험 정책 스마트 컨트랙트 주소
-  CLAIM_CONTRACT: process.env.CLAIM_CONTRACT ?? '',    // 보험금 청구 스마트 컨트랙트 주소
+  WALLET_PK: process.env.WALLET_PK ?? '',                        // 서버 지갑 개인키 (보험금 지급용)
+  PAYOUT_CONTRACT_ADDRESS: process.env.PAYOUT_CONTRACT_ADDRESS ?? '',  // Payout 스마트 컨트랙트 주소
   
 };
