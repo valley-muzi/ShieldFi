@@ -1,8 +1,9 @@
 "use client";
 import PolicyDetailPage from "@/features/insurance/components/products/PolicyDetailPage";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function Success() {
+function SuccessContent() {
   const searchParams = useSearchParams();
 
   // URL 파라미터에서 정책 정보 가져오기
@@ -15,4 +16,12 @@ export default function Success() {
   };
 
   return <PolicyDetailPage policy={policy} />;
+}
+
+export default function Success() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
+  );
 }

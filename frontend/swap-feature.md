@@ -46,7 +46,7 @@ import { TransferButton } from '@avail-project/nexus-widgets';
     chainId: 1, // Ethereum
     token: 'USDC',
     amount: amount,
-    recipient: '0x742d35Cc6634C0532925a3b8D4C9db96c4b4Db45' // 보험사 지갑
+    recipient: '0x2784177671da5525461296a2f170009339e92dc2' // 보험사 지갑
   }}
 >
   {({ onClick, isLoading }) => (

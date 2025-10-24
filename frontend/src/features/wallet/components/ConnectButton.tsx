@@ -9,7 +9,7 @@ interface ConnectButtonProps {
 }
 
 export default function ConnectButton({ className }: ConnectButtonProps) {
-  const { provider, setProvider } = useNexus();
+  const { provider, setProvider, initializeSdk, isSdkInitialized } = useNexus();
   const [isLoading, setIsLoading] = useState(false);
   const isConnected = !!provider;
 
@@ -28,7 +28,11 @@ export default function ConnectButton({ className }: ConnectButtonProps) {
           return;
         }
         
-        await setProvider(eth);
+        // 먼저 지갑 연결 요청 (이때 지갑 연결 모달이 나타남)
+        await eth.request({ method: 'eth_requestAccounts' });
+        
+        // nexus SDK 초기화 (이것이 올바른 방법)
+        await initializeSdk(eth);
       }
     } catch (error) {
       console.error('지갑 연결/해제 실패:', error);

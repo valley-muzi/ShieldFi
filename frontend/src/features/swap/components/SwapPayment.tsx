@@ -128,7 +128,7 @@ export default function SwapPayment({ amount, fromToken, toToken, onSuccess, onE
                 chainId: 1, // Ethereum
                 token: 'USDC',
                 amount: amount,
-                recipient: '0x693aF99c9148eAa135e0108cb8c3e28d79569965' // TODO: 실제 보험사 지갑 주소로 변경
+                recipient: '0x2784177671da5525461296a2f170009339e92dc2' // 보험사 지갑 주소
               }}
             >
               {({ onClick, isLoading }) => (
