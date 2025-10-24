@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS PRODUCT (
     product_description TEXT,
     coverage_amount_min NUMERIC(38, 5) NOT NULL,
     coverage_amount_max NUMERIC(38, 5) NOT NULL,
-    premium_rate BIGINT NOT NULL,
+    premium_rate NUMERIC(38,5) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

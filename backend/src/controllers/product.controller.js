@@ -58,9 +58,9 @@ export class ProductController {
     
     // 성공 응답 반환 (HTTP 200)
     res.status(200).json({
-      success: true,
-      message: 'Products retrieved successfully',
-      ...result // 서비스에서 반환된 데이터와 개수를 그대로 전달
+      ...result,
+      responseTime: new Date().toISOString(),
     });
   });
+  
 }

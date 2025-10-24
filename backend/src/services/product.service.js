@@ -62,16 +62,17 @@ export class ProductService {
           min: product.coverage_amount_min,        // 최소 보장 금액 (Wei 단위, 문자열)
           max: product.coverage_amount_max         // 최대 보장 금액 (Wei 단위, 문자열)
         },
-        premiumRate: product.premium_rate,         // 보험료율 (Wei 단위, 문자열)
+        premiumRate: 5,         // 보험료율 (Wei 단위, 문자열)-> 확장성을 위해 남겨둠..
         createdAt: product.created_at,             // 생성일시
         updatedAt: product.updated_at              // 수정일시
       }));
 
       // 성공 응답 반환
       return {
-        success: true,
+        status: 'ok',                             // 처리 성공 여부
+        message: '보험 상품 목록 조회 완료',         // 응답 메시지
         data: formattedProducts,                   // 변환된 상품 목록
-        count: formattedProducts.length            // 상품 개수
+        //code: 200                                  성공: 응답: 200
       };
     } catch (error) {
       // 에러 로깅 및 에러 재발생
