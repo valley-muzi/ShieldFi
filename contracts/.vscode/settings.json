@@ -7,7 +7,7 @@
 
   // solc 버전 고정(우리 pragma 0.8.24)
   "solidity.defaultCompiler": "remote",
-  "solidity.compileUsingRemoteVersion": "v0.8.24+commit.e11b9ed9",
+  "solidity.compileUsingRemoteVersion": "v0.8.29+commit.ab55807c",
 
   // 패키지(라이브러리) 기본 위치
   "solidity.packageDefaultDependenciesDirectory": "foundry/lib",

@@ -1,5 +1,0 @@
-# hardhat/.env 로 변경필요 시연때.
-SEPOLIA_RPC_URL=
-SEPOLIA_PRIVATE_KEY=
-ETHERSCAN_API_KEY=
-

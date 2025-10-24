@@ -1,12 +1,9 @@
 [profile.default]
-src = "../smartsorce"
-test = "test"
+src = "src_smart"
 out = "out"
-libs = ["lib"]
-solc_version = "0.8.24"
-optimizer = true
-optimizer_runs = 200
+libs = ["lib", "../node_modules"]   # 루트 node_modules를 쓰는 경우
+
 remappings = [
-  "forge-std/=lib/forge-std/src/",
-  "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+  "@openzeppelin/=../node_modules/@openzeppelin/",   # ← 여기서 'contracts' 제거
+  "forge-std/=lib/forge-std/src/"
 ]
