@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS PRODUCT (
     product_name VARCHAR(100) UNIQUE NOT NULL,
     tier VARCHAR(50) UNIQUE NOT NULL,
     product_description TEXT,
-    coverage_amount_min DECIMAL(38, 5) NOT NULL,
-    coverage_amount_max DECIMAL(38, 5) NOT NULL,
+    coverage_amount_min NUMERIC(38, 5) NOT NULL,
+    coverage_amount_max NUMERIC(38, 5) NOT NULL,
     premium_rate BIGINT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
