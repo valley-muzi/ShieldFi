@@ -98,17 +98,13 @@ class ClaimService {
 
       // 1. 트랜잭션 검증
       const txValidation = await this.validateTransaction(tx_hash);
-      if (!txValidation.isValid) {
-        return {
-          success: false,
-          message: txValidation.message
-        };
-      }
+      if (!txValidation.valid) throw new Error(`Transaction invalid: ${txValidation.reason}`);
+      
 
       // 2. NFT 소유권 검증 (예정)
       if (nft_addr && nft_id) {
         const nftValidation = await this.validateNFTOwnership(wallet_addr, nft_addr, nft_id);
-        if (!nftValidation.isValid) {
+        if (!nftValidation.valid) {
           return {
             success: false,
             message: nftValidation.message
@@ -174,47 +170,68 @@ class ClaimService {
    *   console.log(result.message); // "트랜잭션을 찾을 수 없습니다."
    * }
    */
-  async validateTransaction(txHash) {
-    try {
-      const web3 = web3Client.getWeb3();
-      const receipt = await web3.eth.getTransactionReceipt(txHash);
-      
-      if (!receipt) {
-        return {
-          isValid: false,
-          message: '트랜잭션을 찾을 수 없습니다.'
-        };
-      }
 
-      if (!receipt.status) {
-        return {
-          isValid: false,
-          message: '실패한 트랜잭션입니다.'
-        };
-      }
+  
+  async validateTransaction(txHash) {
+    const BASE_URL = "https://sepolia.blockscout.com/api"
+    //Blockscout API를 사용하여 트랜잭션 정보 조회
+    const tx = await fetch(`${BASE_URL}?module=proxy&action=eth_getTransactionByHash&txhash=${txHash}`)
+    .then(r=>r.json());
+    //1. 트랜잭션 존재 여부
+    if(!tx.result) return { valid: false, reason: "트랜잭션을 찾을 수 없습니다."};
+
+    //2. 트랜잭션이 블록에 포함되었는 지 여부
+    if(!tx.result.blockNumber) return ({ valid: false, reason: "처리중인 트랜잭션입니다. 잠시 후 다시 시도해주세요."});
+
+    // 3. 성공 여부
+    const receipt = await fetch(`${BASE_URL}?module=proxy&action=eth_getTransactionReceipt&txhash=${txHash}`)
+      .then(r => r.json());
+
+    if (!receipt.result) return { valid: false, reason: '트랜잭션을 찾지 못함' };
+    if (receipt.result.status !== '0x1') return { valid: false, reason: '실패한 트랜잭션' };
+
+    return { valid: true, blockNumber: parseInt(receipt.result.blockNumber, 16) };
+  }
+    // try {
+    //   const web3 = web3Client.getWeb3();
+    //   const receipt = await web3.eth.getTransactionReceipt(txHash);
+      
+    //   if (!receipt) {
+    //     return {
+    //       isValid: false,
+    //       message: '트랜잭션을 찾을 수 없습니다.'
+    //     };
+    //   }
+
+    //   if (!receipt.status) {
+    //     return {
+    //       isValid: false,
+    //       message: '실패한 트랜잭션입니다.'
+    //     };
+    //   }
 
       // PolicyCreated 이벤트가 있는지 확인
       // 이벤트 시그니처: PolicyCreated(uint256 indexed policyId, address indexed holder, uint256 indexed productId, uint256 premiumPaid, uint256 coverageAmount)
-      const policyCreatedEvent = receipt.logs.find(log => 
-        log.topics[0] === web3.utils.keccak256('PolicyCreated(uint256,address,uint256,uint256,uint256)')
-      );
+    //   const policyCreatedEvent = receipt.logs.find(log => 
+    //     log.topics[0] === web3.utils.keccak256('PolicyCreated(uint256,address,uint256,uint256,uint256)')
+    //   );
 
-      if (!policyCreatedEvent) {
-        return {
-          isValid: false,
-          message: '보험 가입 트랜잭션이 아닙니다.'
-        };
-      }
+    //   if (!policyCreatedEvent) {
+    //     return {
+    //       isValid: false,
+    //       message: '보험 가입 트랜잭션이 아닙니다.'
+    //     };
+    //   }
 
-      return { isValid: true };
-    } catch (error) {
-      console.error('트랜잭션 검증 실패:', error);
-      return {
-        isValid: false,
-        message: '트랜잭션 검증 중 오류가 발생했습니다.'
-      };
-    }
-  }
+    //   return { isValid: true };
+    // } catch (error) {
+    //   console.error('트랜잭션 검증 실패:', error);
+    //   return {
+    //     isValid: false,
+    //     message: '트랜잭션 검증 중 오류가 발생했습니다.'
+    //   };
+    // }
+  
 
   /**
    * NFT 소유권 검증 (선택사항)
@@ -449,7 +466,6 @@ class ClaimService {
   }
 }
 
-}
 
 /**
  * ClaimService 싱글톤 인스턴스
