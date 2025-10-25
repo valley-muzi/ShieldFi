@@ -152,12 +152,12 @@ export default function ProductsPage() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between items-center py-3 border-t border-b border-slate-200">
                       <span className="text-slate-600">Coverage</span>
-                      <span className="text-slate-900">{product.coverage}</span>
+                      <span className="text-slate-900">{product.premium}</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    {/* <div className="flex justify-between items-center">
                       <span className="text-slate-600">Premium</span>
                       <span className="text-teal-600">{product.premium}</span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="mb-8 flex-grow">
