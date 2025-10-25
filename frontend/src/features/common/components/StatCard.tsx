@@ -18,6 +18,7 @@ interface StatCardProps {
   prefix: string;
   chartData: { month: string; value: number }[];
   color: string;
+  isLoading?: boolean;
 }
 
 export default function StatCard({
@@ -26,6 +27,7 @@ export default function StatCard({
   prefix,
   chartData,
   color,
+  isLoading = false,
 }: StatCardProps) {
   const [isMounted, setIsMounted] = React.useState(false);
   React.useEffect(() => {
@@ -42,10 +44,42 @@ export default function StatCard({
       <Card className="p-6 bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 min-w-0 w-full">
         <h3 className="text-sm text-muted-foreground mb-3">{title}</h3>
         <div className="mb-4">
-          <AnimatedCounter endValue={endValue} prefix={prefix} />
+          {isLoading ? (
+            <div className="flex items-center justify-center h-8">
+              <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <AnimatedCounter endValue={endValue} prefix={prefix} />
+          )}
         </div>
         <div className="h-32 mt-4 min-w-0 min-h-0 w-full">
-          {isMounted && (
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="flex space-x-1">
+                <div className="w-2 h-8 bg-blue-200 rounded animate-pulse"></div>
+                <div
+                  className="w-2 h-6 bg-blue-200 rounded animate-pulse"
+                  style={{ animationDelay: "0.1s" }}
+                ></div>
+                <div
+                  className="w-2 h-10 bg-blue-200 rounded animate-pulse"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
+                <div
+                  className="w-2 h-7 bg-blue-200 rounded animate-pulse"
+                  style={{ animationDelay: "0.3s" }}
+                ></div>
+                <div
+                  className="w-2 h-9 bg-blue-200 rounded animate-pulse"
+                  style={{ animationDelay: "0.4s" }}
+                ></div>
+                <div
+                  className="w-2 h-5 bg-blue-200 rounded animate-pulse"
+                  style={{ animationDelay: "0.5s" }}
+                ></div>
+              </div>
+            </div>
+          ) : isMounted ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
@@ -85,7 +119,7 @@ export default function StatCard({
                 />
               </AreaChart>
             </ResponsiveContainer>
-          )}
+          ) : null}
         </div>
       </Card>
     </motion.div>

@@ -4,10 +4,20 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/features/common/components/button";
 import ParticleBackground from "@/features/common/effects/ParticleBackground";
 import StatCard from "@/features/common/components/StatCard";
+import { useBlockscoutTokenInfo } from "@/features/nft/hooks/useBlockscoutTokenInfo";
 
 export default function Home() {
   const router = useRouter();
 
+
+  // NFT 데이터 가져오기
+  const {
+    holdersCount,
+    isLoading: nftLoading,
+  } = useBlockscoutTokenInfo({
+    contractAddress: "0x54f456b544abfb785694400bcb1d85629b2d437f",
+    tokenId: "1",
+  });
   const handleViewProducts = () => {
     router.push("/products");
   };
@@ -62,7 +72,7 @@ export default function Home() {
           />
           <StatCard
             title="Total Policyholders"
-            endValue={12567}
+            endValue={holdersCount ? parseInt(holdersCount) : 0}
             prefix=""
             chartData={[
               { month: "Jan", value: 4000 },
@@ -73,6 +83,7 @@ export default function Home() {
               { month: "Jun", value: 12567 },
             ]}
             color="#10B981"
+            isLoading={nftLoading}
           />
           <StatCard
             title="Total Deposits"
