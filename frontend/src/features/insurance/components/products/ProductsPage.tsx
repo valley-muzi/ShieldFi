@@ -1,75 +1,58 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/features/common/components/button";
 import { Card } from "@/features/common/components/card";
-import { Shield, Check } from "lucide-react";
+import { Shield, Check, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import PaymentModal from "./PaymentModal";
+import { ProductService } from "../../services/productService";
+import { ProductMapper } from "../../utils/productMapper";
+import { ProductDisplay } from "../../types/product";
 
-const insuranceProducts = [
-  {
-    id: "smart-contract",
-    name: "Smart Contract Protection",
-    description:
-      "Comprehensive coverage against smart contract vulnerabilities and exploits",
-    coverage: "Up to $500,000",
-    premium: "2.5 ETH/year",
-    features: [
-      "Audit coverage for verified contracts",
-      "Exploit protection",
-      "Reentrancy attack coverage",
-      "Flash loan attack protection",
-      "24/7 monitoring",
-    ],
-    color: "from-teal-500 to-teal-600",
-  },
-  {
-    id: "wallet-security",
-    name: "Wallet Security Insurance",
-    description:
-      "Protection for your crypto wallet against unauthorized access and theft",
-    coverage: "Up to $250,000",
-    premium: "1.5 ETH/year",
-    features: [
-      "Private key theft coverage",
-      "Phishing attack protection",
-      "Unauthorized transaction coverage",
-      "Multi-signature wallet support",
-      "Hardware wallet coverage",
-    ],
-    color: "from-blue-500 to-blue-600",
-  },
-  {
-    id: "defi-protocol",
-    name: "DeFi Protocol Coverage",
-    description:
-      "Insurance for DeFi protocol failures, hacks, and impermanent loss",
-    coverage: "Up to $1,000,000",
-    premium: "5.0 ETH/year",
-    features: [
-      "Protocol failure coverage",
-      "Impermanent loss protection",
-      "Oracle manipulation coverage",
-      "Governance attack protection",
-      "Liquidity pool insurance",
-    ],
-    color: "from-cyan-500 to-cyan-600",
-  },
-];
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductDisplay | null>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [products, setProducts] = useState<ProductDisplay[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handlePurchase = (product: any) => {
+  // API에서 상품 데이터 가져오기
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const apiProducts = await ProductService.getProducts();
+        const displayProducts = ProductMapper.mapApiProductsToDisplay(apiProducts);
+        setProducts(displayProducts);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '상품을 불러오는데 실패했습니다.');
+        console.error('Error fetching products:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handlePurchase = (product: ProductDisplay) => {
     setSelectedProduct(product);
     setIsPaymentModalOpen(true);
   };
 
   const handlePaymentSuccess = () => {
     setIsPaymentModalOpen(false);
+    
+    // selectedProduct가 null인 경우 처리
+    if (!selectedProduct) {
+      console.error('Selected product is null');
+      return;
+    }
+    
     // 정책 정보를 URL 파라미터로 전달하여 success 페이지로 이동
     const params = new URLSearchParams({
       id: `POL-${Date.now()}-${selectedProduct.id}`,
@@ -100,9 +83,37 @@ export default function ProductsPage() {
             </p>
           </motion.div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-16">
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+                <span className="text-lg text-slate-600">상품을 불러오는 중...</span>
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-16">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">오류 발생</h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  className="border-red-300 text-red-700 hover:bg-red-50"
+                >
+                  다시 시도
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Product Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-[85%] mx-auto">
-            {insuranceProducts.map((product, index) => (
+          {!isLoading && !error && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-[85%] mx-auto">
+              {products.map((product, index) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -188,7 +199,8 @@ export default function ProductsPage() {
                 </Card>
               </motion.div>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       </main>
 

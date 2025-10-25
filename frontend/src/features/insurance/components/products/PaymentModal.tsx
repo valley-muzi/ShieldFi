@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/features/common/components/dialog';
 import { Button } from '@/features/common/components/button';
 import { Card } from '@/features/common/components/card';
@@ -35,6 +35,14 @@ export default function PaymentModal({
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // 모달이 열릴 때 상태 초기화
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedMethod(null);
+      setIsProcessing(false);
+    }
+  }, [isOpen]);
+
   const handlePayment = async (method: PaymentMethod) => {
     if (!isConnected) {
       alert('지갑을 먼저 연결해주세요.');
@@ -50,6 +58,11 @@ export default function PaymentModal({
 
   const handlePaymentError = (error: string) => {
     alert(`결제에 실패했습니다: ${error}`);
+  };
+
+  // 이전 단계로 돌아가기
+  const handleBackToMethodSelection = () => {
+    setSelectedMethod(null);
   };
 
   const paymentMethods = [
@@ -119,56 +132,96 @@ export default function PaymentModal({
           )}
 
           {/* 결제 방식 선택 */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-lg">결제 방식 선택</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {paymentMethods.map((method) => {
-                const Icon = method.icon;
-                return (
-                  <Card
-                    key={method.id}
-                    className={`p-4 cursor-pointer transition-all duration-200 ${
-                      selectedMethod === method.id
-                        ? 'ring-2 ring-blue-500 bg-blue-50'
-                        : 'hover:shadow-md'
-                    } ${method.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => !method.disabled && setSelectedMethod(method.id)}
-                  >
-                    <div className="text-center">
-                      <div className={`w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br ${method.color} flex items-center justify-center`}>
-                        <Icon className="w-6 h-6 text-white" />
+          {!selectedMethod && (
+            <div className="space-y-4">
+              <h4 className="font-semibold text-lg">결제 방식 선택</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {paymentMethods.map((method) => {
+                  const Icon = method.icon;
+                  return (
+                    <Card
+                      key={method.id}
+                      className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                        method.disabled ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onClick={() => !method.disabled && handlePayment(method.id)}
+                    >
+                      <div className="text-center">
+                        <div className={`w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br ${method.color} flex items-center justify-center`}>
+                          <Icon className="w-6 h-6 text-white" />
+                        </div>
+                        <h5 className="font-semibold mb-2">{method.name}</h5>
+                        <p className="text-sm text-slate-600">{method.description}</p>
                       </div>
-                      <h5 className="font-semibold mb-2">{method.name}</h5>
-                      <p className="text-sm text-slate-600">{method.description}</p>
-                    </div>
-                  </Card>
-                );
-              })}
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 결제 컴포넌트 */}
           {selectedMethod === 'bridge' && (
-            <BridgePayment
-              amount="2.5"
-              token="USDC"
-              onSuccess={handlePaymentSuccess}
-              onError={handlePaymentError}
-            />
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  onClick={handleBackToMethodSelection}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <ArrowRight className="w-4 h-4 rotate-180" />
+                  뒤로
+                </Button>
+                <h4 className="font-semibold text-lg">브릿지 결제</h4>
+              </div>
+              <BridgePayment
+                amount="2.5"
+                token="USDC"
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+              />
+            </div>
           )}
 
           {selectedMethod === 'swap' && (
-            <SwapPayment
-              amount="2.5"
-              fromToken="ETH"
-              toToken="USDC"
-              onSuccess={handlePaymentSuccess}
-              onError={handlePaymentError}
-            />
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  onClick={handleBackToMethodSelection}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <ArrowRight className="w-4 h-4 rotate-180" />
+                  뒤로
+                </Button>
+                <h4 className="font-semibold text-lg">스왑 결제</h4>
+              </div>
+              <SwapPayment
+                amount="2.5"
+                fromToken="ETH"
+                toToken="USDC"
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+              />
+            </div>
           )}
 
           {selectedMethod === 'direct' && (
             <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  onClick={handleBackToMethodSelection}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <ArrowRight className="w-4 h-4 rotate-180" />
+                  뒤로
+                </Button>
+                <h4 className="font-semibold text-lg">직접 결제</h4>
+              </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="font-medium text-blue-900 mb-2">직접 결제</h4>
                 <p className="text-blue-700 text-sm">
@@ -194,31 +247,6 @@ export default function PaymentModal({
             </div>
           )}
 
-          {/* 결제 방식 선택 버튼들 */}
-          {!selectedMethod && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {paymentMethods.map((method) => {
-                const Icon = method.icon;
-                return (
-                  <Card
-                    key={method.id}
-                    className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      method.disabled ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    onClick={() => !method.disabled && handlePayment(method.id)}
-                  >
-                    <div className="text-center">
-                      <div className={`w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br ${method.color} flex items-center justify-center`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <h5 className="font-semibold mb-2">{method.name}</h5>
-                      <p className="text-sm text-slate-600">{method.description}</p>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>
