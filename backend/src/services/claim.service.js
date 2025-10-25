@@ -6,7 +6,7 @@
  */
 
 import web3Client from '../web3/clients/web3Client.js';
-import payoutABI from '../web3/contracts/payout.abi.json' assert { type: 'json' };
+import payoutABI from '../web3/contracts/payout.abi.json' with { type: 'json' };
 import { env } from '../config/env.js';
 
 /**
@@ -173,7 +173,7 @@ class ClaimService {
 
   
   async validateTransaction(txHash) {
-    const BASE_URL = "https://sepolia.blockscout.com/api"
+    const BASE_URL = "https://eth-sepolia.blockscout.com/api"
     //Blockscout API를 사용하여 트랜잭션 정보 조회
     const tx = await fetch(`${BASE_URL}?module=proxy&action=eth_getTransactionByHash&txhash=${txHash}`)
     .then(r=>r.json());

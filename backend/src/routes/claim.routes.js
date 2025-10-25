@@ -13,7 +13,7 @@ const router = express.Router();
 /**
  * 보험금 청구 요청 라우트
  * 
- * @route POST /api/claims
+ * @route POST /api/claim
  * @description 사용자가 보험금 청구를 요청하는 엔드포인트
  * @access Public (인증 불필요 - 트랜잭션 해시로 검증)
  * 
@@ -23,7 +23,7 @@ const router = express.Router();
  * @body {number} nft_id - NFT ID (필수)
  * 
  * @example
- * POST /api/claims
+ * POST /api/claim
  * Content-Type: application/json
  * 
  * {
@@ -34,5 +34,29 @@ const router = express.Router();
  * }
  */
 router.post('/', submitClaimRequest);
+
+/**
+ * 보험금 청구 API 상태 확인
+ * @route GET /api/claim
+ * @description API 상태 및 사용법 안내
+ */
+router.get('/', (req, res) => {
+  res.json({
+    status: "ok",
+    message: "보험금 청구 API",
+    usage: "POST 요청으로 청구 데이터를 전송하세요",
+    required_fields: ["tx_hash", "wallet_addr", "nft_addr", "nft_id"],
+    example: {
+      method: "POST",
+      url: "/api/claim",
+      body: {
+        tx_hash: "0xabc1234...",
+        wallet_addr: "0x742d35...",
+        nft_addr: "0xdef5678...",
+        nft_id: 123
+      }
+    }
+  });
+});
 
 export default router;
