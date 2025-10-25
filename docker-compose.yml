@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 데이터베이스 서비스
+  postgres:
+    image: postgres:15-alpine
+    container_name: shieldfi-postgres
+    restart: unless-stopped
+    environment:
+      # 데이터베이스 설정
+      POSTGRES_DB: shieldfi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shieldfi_password
+      # 초기화 스크립트 실행
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    ports:
+      # 호스트 포트:컨테이너 포트
+      - "5432:5432"
+    volumes:
+      # 데이터 영속성을 위한 볼륨 마운트
+      - postgres_data:/var/lib/postgresql/data
+      # 초기화 스크립트 마운트 (선택사항)
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - shieldfi-network
+    healthcheck:
+      # 데이터베이스 연결 상태 확인
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shieldfi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin (데이터베이스 관리 도구) - 선택사항
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: shieldfi-pgadmin
+    restart: unless-stopped
+    environment:
+      # pgAdmin 로그인 설정
+      PGADMIN_DEFAULT_EMAIL: admin@shieldfi.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      # 서버 설정
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - shieldfi-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+# 네트워크 설정
+networks:
+  shieldfi-network:
+    driver: bridge
+    name: shieldfi-network
+
+# 볼륨 설정 (데이터 영속성)
+volumes:
+  postgres_data:
+    driver: local
+    name: shieldfi_postgres_data
+  pgadmin_data:
+    driver: local
+    name: shieldfi_pgadmin_data

@@ -1,17 +1,31 @@
-@"
-import mongoose from 'mongoose';
+// src/config/db.config.js
+import pkg from 'pg';
+const { Pool } = pkg;
 import { env } from './env.js';
 
-mongoose.set('strictQuery', true);
+export const pool = new Pool({
+  user: env.DB_USER || 'postgres',
+  host: env.DB_HOST || 'localhost',
+  database: env.DB_NAME || 'shieldfi',
+  password: env.DB_PASSWORD || 'password',
+  port: env.DB_PORT || 5432,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+});
 
 export const connectDB = async () => {
-  if (!env.MONGO_URI) return;
-  await mongoose.connect(env.MONGO_URI, { autoIndex: true });
-  console.log('[db] connected');
+  try {
+    const client = await pool.connect();
+    console.log('[db] PostgreSQL connected successfully');
+    client.release();
+  } catch (err) {
+    console.error('[db] PostgreSQL connection error:', err.message);
+    // 테스트/스크립트에서 종료되면 이후 정리 못함
+    // process.exit(1);
+    throw err; // 호출한 쪽에서 처리
+  }
 };
 
-await connectDB().catch(err => {
-  console.error('[db] connection error:', err.message);
-  process.exit(1);
-});
-"@ | Set-Content src/config/db.config.js
+// 자동 실행 금지
+// await connectDB();
