@@ -9,6 +9,7 @@ import { useBlockscoutTokenInfo } from "@/features/nft/hooks/useBlockscoutTokenI
 export default function Home() {
   const router = useRouter();
 
+
   // NFT 데이터 가져오기
   const {
     holdersCount,
@@ -17,7 +18,6 @@ export default function Home() {
     contractAddress: "0x54f456b544abfb785694400bcb1d85629b2d437f",
     tokenId: "1",
   });
-
   const handleViewProducts = () => {
     router.push("/products");
   };
@@ -55,7 +55,6 @@ export default function Home() {
             </Button>
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl mt-12 min-w-0">
           <StatCard
             title="Total Payout Amount"

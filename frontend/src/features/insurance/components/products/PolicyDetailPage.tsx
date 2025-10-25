@@ -29,7 +29,6 @@ export default function PolicyDetailPage({
   buttonText = "Home",
 }: PolicyDetailPageProps) {
   const router = useRouter();
-
   const handleGoToHome = () => {
     router.push("/");
   };

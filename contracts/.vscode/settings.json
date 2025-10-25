@@ -1,0 +1,22 @@
+{
+  // remappings: VSCode 확장에 직접 알려주기
+  "solidity.remappings": [
+    "forge-std/=foundry/lib/forge-std/src/",
+    "openzeppelin-contracts/=foundry/lib/openzeppelin-contracts/"
+  ],
+
+  // solc 버전 고정(우리 pragma 0.8.24)
+  "solidity.defaultCompiler": "remote",
+  "solidity.compileUsingRemoteVersion": "v0.8.29+commit.ab55807c",
+
+  // 패키지(라이브러리) 기본 위치
+  "solidity.packageDefaultDependenciesDirectory": "foundry/lib",
+
+  // 소스 기본 디렉터리(우리는 기본 'contracts'가 아니라 'smartsorce'를 사용)
+  "solidity.packageDefaultDependenciesContractsDirectory": "smartsorce",
+
+  // 프로젝트 소스 경로(확장에 명시적으로 알려주기)
+  "solidity.projectPaths": [
+    "smartsorce"
+  ]
+}

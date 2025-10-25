@@ -1,0 +1,9 @@
+[profile.default]
+src = "src_smart"
+out = "out"
+libs = ["lib", "../node_modules"]   # 루트 node_modules를 쓰는 경우
+
+remappings = [
+  "@openzeppelin/=../node_modules/@openzeppelin/",   # ← 여기서 'contracts' 제거
+  "forge-std/=lib/forge-std/src/"
+]

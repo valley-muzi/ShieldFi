@@ -7,7 +7,7 @@ import ConnectButton from "@/features/wallet/components/ConnectButton";
 
 export default function Header() {
   const router = useRouter();
-
+  const pathname = usePathname();
   const handleGoHome = () => {
     router.push("/");
   };
