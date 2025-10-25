@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { Button } from "@/features/common/components/button";
-import { Shield, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import PolicyCard from "./PolicyCard";
 import NFTCertificate from "./NFTCertificate";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface PolicyDetailPageProps {
   policy: {
@@ -29,7 +29,6 @@ export default function PolicyDetailPage({
   buttonText = "Home",
 }: PolicyDetailPageProps) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleGoToHome = () => {
     router.push("/");
@@ -49,23 +48,19 @@ export default function PolicyDetailPage({
             transition={{ type: "spring", duration: 0.6 }}
             className="text-center mb-12"
           >
-            {pathname === "/success" && (
-              <>
-                <motion.div
-                  animate={{
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6"
-                >
-                  <CheckCircle2 className="w-12 h-12 text-green-600" />
-                </motion.div>
-              </>
-            )}
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6"
+            >
+              <CheckCircle2 className="w-12 h-12 text-green-600" />
+            </motion.div>
             <h1 className="text-5xl mb-4 text-slate-900">{title}</h1>
             <p className="text-xl text-slate-600">{subtitle}</p>
           </motion.div>
