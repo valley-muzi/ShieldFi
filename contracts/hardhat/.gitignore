@@ -1,0 +1,13 @@
+# Hardhat build & cache
+cache/
+artifacts/
+
+# Node modules
+node_modules/
+
+# Environment secrets (절대 업로드 금지)
+.env
+
+# Logs and deployment outputs
+../logs/
+../deployments/
