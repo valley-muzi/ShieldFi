@@ -1,7 +1,17 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'motion/react': 'framer-motion',
+      'motion': 'framer-motion'
+    }
+    return config
+  }
+}
 
-export default nextConfig;
+export default nextConfig
