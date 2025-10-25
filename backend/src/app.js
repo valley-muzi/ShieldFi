@@ -7,7 +7,7 @@ import router from './routes/index.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
 import 'dotenv/config'; // .env 읽기용
-const BASE = process.env.BLOCKSCOUT_API_URL || 'https://sepolia.blockscout.com/api';
+import verifyTxRouter from './routes/verifyTx.route.js';
 /**
  * Express Application Setup
  * 
@@ -53,29 +53,8 @@ app.use(rateLimit({
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 // 트랜잭션 검증 엔드포인트
-app.post('/api/verify-tx', async (req, res) => {
-  try {
-    const { txHash } = req.body;
-    if (!txHash) return res.status(400).json({ ok: false, error: 'MISSING_TX_HASH' });
+app.use('/api', verifyTxRouter);
 
-    const tx = await (await fetch(`${BASE}?module=proxy&action=eth_getTransactionByHash&txhash=${txHash}`)).json();
-    if (!tx.result) return res.json({ ok: false, state: 'TX_NOT_FOUND' });
-
-    if (!tx.result.blockNumber) return res.json({ ok: false, state: 'PENDING' });
-
-    const rc = await (await fetch(`${BASE}?module=proxy&action=eth_getTransactionReceipt&txhash=${txHash}`)).json();
-    if (!rc.result) return res.json({ ok: false, state: 'NO_RECEIPT' });
-
-    const success = rc.result.status === '0x1';
-    res.json({
-      ok: success,
-      state: success ? 'CONFIRMED_SUCCESS' : 'CONFIRMED_FAILED',
-      blockNumber: parseInt(rc.result.blockNumber, 16)
-    });
-  } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
-  }
-});
 
 // API 라우트 등록 (모든 /api/* 경로는 router에서 처리)
 app.use('/api', router);
