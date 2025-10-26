@@ -1,0 +1,53 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {"name": "treasury_", "type": "address", "internalType": "address"}
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "approveAndPay",
+    "inputs": [
+      {"name": "policyId", "type": "uint256", "internalType": "uint256"},
+      {"name": "beneficiary", "type": "address", "internalType": "address"},
+      {"name": "amount", "type": "uint256", "internalType": "uint256"}
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setTreasury",
+    "inputs": [
+      {"name": "treasury_", "type": "address", "internalType": "address"}
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "pause",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "unpause",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "ClaimApproved",
+    "inputs": [
+      {"name": "policyId", "type": "uint256", "indexed": true, "internalType": "uint256"},
+      {"name": "beneficiary", "type": "address", "indexed": true, "internalType": "address"},
+      {"name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256"}
+    ],
+    "anonymous": false
+  }
+]
