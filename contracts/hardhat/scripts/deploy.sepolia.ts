@@ -28,6 +28,89 @@ function loadArtifact(p: string) {
   return { abi: j.abi, bytecode: j.bytecode };
 }
 
+// --- gas helpers ------------------------------------------------------------
+
+/**
+ * 최신 블록의 가스 cap을 읽어온다. 실패 시 undefined.
+ */
+async function getBlockGasCap(provider: JsonRpcProvider): Promise<bigint | undefined> {
+  try {
+    const latest = await provider.getBlock("latest");
+    // ethers v6: Block.gasLimit는 bigint
+    return latest?.gasLimit;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 배포 트랜잭션의 안전 가스리밋을 계산한다.
+ * - 우선 estimateGas + buffer
+ * - 네트워크 cap이 있으면 cap - safetyMargin으로 clamp
+ * - 추정 실패 시 보수적 fallback 사용
+ */
+async function calcSafeDeployGasLimit(
+  factory: ContractFactory,
+  args: any[],
+  wallet: Wallet,
+  opts?: { buffer?: bigint; safetyMargin?: bigint; fallback?: bigint }
+): Promise<bigint> {
+  const buffer       = opts?.buffer ?? 200_000n;
+  const safetyMargin = opts?.safetyMargin ?? 100_000n;
+
+  // cap 조회
+  const cap = await getBlockGasCap(wallet.provider as JsonRpcProvider);
+
+  // 배포 트랜잭션 생성
+  let est: bigint | undefined;
+  try {
+    // getDeployTransaction은 data(to:null) 포함한 트랜잭션 템플릿을 준다
+    const txReq = await factory.getDeployTransaction(...args);
+    est = await wallet.estimateGas(txReq);
+  } catch {
+    est = undefined;
+  }
+
+  if (est !== undefined) {
+    let candidate = est + buffer;
+    if (cap !== undefined) {
+      const maxAllowed = cap > safetyMargin ? (cap - safetyMargin) : cap;
+      if (candidate > maxAllowed) candidate = maxAllowed;
+    }
+    // 너무 작은 비정상 추정 방지용 하한
+    if (candidate < 500_000n) candidate = 500_000n;
+    return candidate;
+  }
+
+  // 추정 실패 fallback
+  if (cap !== undefined) {
+    const fb = cap > safetyMargin ? (cap - safetyMargin) : cap;
+    return fb;
+  }
+  // cap도 모를 때는 보수적 상수
+  return opts?.fallback ?? 16_000_000n;
+}
+
+/**
+ * 공통 배포 유틸: args와 가스리밋을 자동 적용하여 배포
+ */
+async function deployWithSafeGas(
+  factory: ContractFactory,
+  wallet: Wallet,
+  args: any[]
+) {
+  const gasLimit = await calcSafeDeployGasLimit(factory, args, wallet);
+  const contract = await factory.deploy(...args, { gasLimit });
+  await contract.waitForDeployment();
+
+  const dtx = contract.deploymentTransaction();
+  if (dtx) await wallet.provider!.waitForTransaction(dtx.hash);
+
+  return contract;
+}
+
+// --- main deploy helpers ----------------------------------------------------
+
 async function deployIfNeeded(
   name: "Treasury" | "PolicyNFT",
   artifactPath: string,
@@ -57,10 +140,8 @@ async function deployIfNeeded(
     );
   }
 
-  const contract = await factory.deploy(...args);
-  await contract.waitForDeployment();
-  const dtx = contract.deploymentTransaction();
-  if (dtx) await wallet.provider!.waitForTransaction(dtx.hash);
+  // 안전 가스리밋을 반영하여 배포
+  const contract = await deployWithSafeGas(factory, wallet, args);
 
   const addr = await contract.getAddress();
   console.log(`[deploy] ${name}.address =`, addr);
@@ -91,11 +172,9 @@ async function main() {
   const insArt = loadArtifact(ART_INSURANCE);
   const InsuranceFactory = new ContractFactory(insArt.abi, insArt.bytecode, wallet);
 
-  const insurance = await InsuranceFactory.deploy(TREASURY_ADDR!, POLICYNFT_ADDR!);
-  await insurance.waitForDeployment();
-  const itx = insurance.deploymentTransaction();
-  if (itx) await wallet.provider!.waitForTransaction(itx.hash);
+  const insurance = await deployWithSafeGas(InsuranceFactory, wallet, [TREASURY_ADDR!, POLICYNFT_ADDR!]);
 
+  const itx = insurance.deploymentTransaction();
   const insAddr = await insurance.getAddress();
   console.log("[deploy] Insurance.address =", insAddr);
   if (itx) console.log("[deploy] Insurance.txHash  =", itx.hash);
