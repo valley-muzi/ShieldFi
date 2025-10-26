@@ -9,10 +9,17 @@ export default function PolicyHistoryPage() {
   // 임시 데이터 - 실제로는 API에서 가져올 데이터
   const mockPolicy = {
     id: "POL-1703123456-smart-contract",
-    type: "Smart Contract Protection",
-    coverage: "Up to $500,000",
-    premium: "2.5 ETH/year",
+    type: "Premium Shield",
+    coverage: "5.0 ETH/year",
+    premium: "Premium protection insurance product that provides coverage for medium-scale losses.",
     duration: "1 year",
+    features: [
+      "Medium Scale Loss Coverage",
+      "Advanced Protection Features", 
+      "Priority Support",
+      "Real-time Alerts",
+      "Expert Consultation"
+    ]
   };
 
   const handleOpenClaimModal = () => {
@@ -30,7 +37,7 @@ export default function PolicyHistoryPage() {
         onGoToClaim={handleOpenClaimModal}
         title="My Insurance Policy"
         subtitle="View your active insurance policy details and NFT certificate"
-        buttonText="File a Claim"
+        buttonText="Claim Insurance"
       />
 
       <ClaimModal

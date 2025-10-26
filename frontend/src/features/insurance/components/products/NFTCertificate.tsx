@@ -15,7 +15,7 @@ interface NFTCertificateProps {
 }
 
 export default function NFTCertificate({ policy }: NFTCertificateProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(true);
 
   const handleClick = () => {
     setIsFlipped(!isFlipped);

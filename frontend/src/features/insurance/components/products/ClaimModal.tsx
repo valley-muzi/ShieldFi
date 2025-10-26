@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/features/common/components/dialog";
-import { Shield, Search, CheckCircle2 } from "lucide-react";
+import { Shield, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ClaimModalProps {
@@ -103,13 +103,12 @@ export default function ClaimModal({
                     className="relative flex-grow"
                     whileFocus={{ scale: 1.01 }}
                   >
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <Input
                       type="text"
                       placeholder="Enter transaction hash..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 py-4 text-base border-slate-300 focus:border-teal-500 focus:ring-teal-500 rounded-lg shadow-sm"
+                      className="py-4 text-base border-slate-300 focus:border-teal-500 focus:ring-teal-500 rounded-lg shadow-sm"
                     />
                   </motion.div>
                   <motion.div

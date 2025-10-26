@@ -26,11 +26,11 @@ export default function InsuranceSuccessPage() {
           </div>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            보험 가입 완료!
+            Insurance Signup Complete!
           </h1>
           
           <p className="text-gray-600 mb-8">
-            축하합니다! ShieldFi 보험 가입이 성공적으로 완료되었습니다.
+            Congratulations! Your ShieldFi insurance signup has been completed successfully.
           </p>
         </div>
 
@@ -38,30 +38,30 @@ export default function InsuranceSuccessPage() {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                가입 정보
+                Signup Information
               </h2>
               
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-green-700">보험 상품:</span>
-                    <span className="font-medium">DeFi 보험</span>
+                    <span className="text-green-700">Policy ID:</span>
+                    <span className="font-medium font-mono text-sm">POL-1703123456-smart-contract</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-700">보험료:</span>
-                    <span className="font-medium">0.001 ETH</span>
+                    <span className="text-green-700">Insurance Type:</span>
+                    <span className="font-medium">Premium Shield</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-700">보장 금액:</span>
-                    <span className="font-medium">0.01 ETH</span>
+                    <span className="text-green-700">Coverage:</span>
+                    <span className="font-medium">5.0 ETH/year</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-700">보장 기간:</span>
-                    <span className="font-medium">1년</span>
+                    <span className="text-green-700">Premium:</span>
+                    <span className="font-medium text-sm">Premium protection insurance product that provides coverage for medium-scale losses.</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-700">결제 방법:</span>
-                    <span className="font-medium">브릿지/스왑</span>
+                    <span className="text-green-700">Duration:</span>
+                    <span className="font-medium">1 Year</span>
                   </div>
                 </div>
               </div>
@@ -69,13 +69,27 @@ export default function InsuranceSuccessPage() {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <h3 className="font-medium text-blue-900 mb-3">
-                다음 단계
+                Next Steps
               </h3>
               <ul className="text-sm text-blue-700 space-y-2">
-                <li>• 보험 정책 NFT가 지갑에 발행됩니다</li>
-                <li>• 보험 가입 내역은 History 페이지에서 확인할 수 있습니다</li>
-                <li>• 보험금 청구는 언제든지 가능합니다</li>
-                <li>• 보장 기간 동안 자동으로 보호받습니다</li>
+                <li>• Insurance policy NFT will be issued to your wallet</li>
+                <li>• You can check your insurance history on the History page</li>
+                <li>• You can file claims anytime</li>
+                <li>• You will be automatically protected during the coverage period</li>
+              </ul>
+            </div>
+
+            {/* Key Features Section */}
+            <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
+              <h3 className="font-medium text-teal-900 mb-3">
+                Key Features
+              </h3>
+              <ul className="text-sm text-teal-700 space-y-2">
+                <li>• Medium Scale Loss Coverage</li>
+                <li>• Advanced Protection Features</li>
+                <li>• Priority Support</li>
+                <li>• Real-time Alerts</li>
+                <li>• Expert Consultation</li>
               </ul>
             </div>
           </div>
@@ -87,16 +101,18 @@ export default function InsuranceSuccessPage() {
             className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90 text-white"
           >
             <History className="w-4 h-4" />
-            보험 내역 보기
+            View Insurance History
+            <ArrowRight className="w-4 h-4" />
           </Button>
           
           <Button
             onClick={handleGoToHome}
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <Home className="w-4 h-4" />
-            홈으로 돌아가기
+            Back to Home
+            <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
       </div>

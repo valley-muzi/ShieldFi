@@ -11,6 +11,7 @@ interface PolicyCardProps {
     coverage: string;
     premium: string;
     duration: string;
+    features?: string[];
   };
 }
 
@@ -49,7 +50,7 @@ export default function PolicyCard({ policy }: PolicyCardProps) {
               <DollarSign className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex-grow">
-              <div className="text-sm text-slate-600 mb-1">Coverage Amount</div>
+              <div className="text-sm text-slate-600 mb-1">Coverage</div>
               <div className="text-slate-900">{policy.coverage}</div>
             </div>
           </motion.div>
@@ -85,14 +86,26 @@ export default function PolicyCard({ policy }: PolicyCardProps) {
           </motion.div>
         </div>
 
-        <div className="pt-6 border-t border-slate-200">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-600">Status</span>
-            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
-              Active
-            </span>
+        {/* Key Features Section */}
+        {policy.features && policy.features.length > 0 && (
+          <div className="pt-6 border-t border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Key Features</h3>
+            <ul className="space-y-2">
+              {policy.features.map((feature, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                  className="flex items-start gap-2"
+                >
+                  <div className="w-2 h-2 bg-teal-500 rounded-full mt-2 flex-shrink-0" />
+                  <span className="text-sm text-slate-600">{feature}</span>
+                </motion.li>
+              ))}
+            </ul>
           </div>
-        </div>
+        )}
       </div>
     </Card>
   );
