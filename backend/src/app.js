@@ -6,6 +6,10 @@ import rateLimit from 'express-rate-limit';
 import router from './routes/index.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
+import 'dotenv/config'; // .env 읽기용
+import verifyTxRouter from './routes/verifyTx.routes.js';
+import nft1155Router from './routes/nft1155.routes.js';
+
 /**
  * Express Application Setup
  * 
@@ -49,6 +53,11 @@ app.use(rateLimit({
 // ===== 라우트 설정 =====
 // 헬스 체크 엔드포인트 (서버 상태 확인용)
 app.get('/health', (_req, res) => res.json({ ok: true }));
+
+// 트랜잭션 검증 엔드포인트
+app.use('/api', verifyTxRouter);
+// NFT 1155 검증 엔드포인트
+app.use('/api', nft1155Router);
 
 // API 라우트 등록 (모든 /api/* 경로는 router에서 처리)
 app.use('/api', router);
