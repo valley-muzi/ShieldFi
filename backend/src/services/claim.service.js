@@ -5,7 +5,8 @@
  * @version 1.0.0
  */
 
-import web3Client from '../web3/clients/web3Client.js';
+import { ethers } from 'ethers';
+import ethersClient from '../web3/clients/web3Client.js';
 import payoutABI from '../web3/contracts/payout.abi.json' with { type: 'json' };
 import { env } from '../config/env.js';
 
@@ -55,8 +56,8 @@ class ClaimService {
         return;
       }
 
-      // Web3 컨트랙트 인스턴스 생성 (ABI + 주소)
-      this.payoutContract = web3Client.createContract(payoutABI, contractAddress);
+      // Payout 컨트랙트 인스턴스 생성 (ABI + 주소)
+      this.payoutContract = ethersClient.createContract(payoutABI, contractAddress, true);
       console.log('Payout 컨트랙트 초기화 완료:', contractAddress);
     } catch (error) {
       console.error('Payout 컨트랙트 초기화 실패:', error);
@@ -104,7 +105,7 @@ class ClaimService {
       // 2. NFT 소유권 검증 (예정)
       if (nft_addr && nft_id) {
         const nftValidation = await this.validateNFTOwnership(wallet_addr, nft_addr, nft_id);
-        if (!nftValidation.valid) {
+        if (!nftValidation.isValid) {
           return {
             success: false,
             message: nftValidation.message
@@ -192,45 +193,6 @@ class ClaimService {
 
     return { valid: true, blockNumber: parseInt(receipt.result.blockNumber, 16) };
   }
-    // try {
-    //   const web3 = web3Client.getWeb3();
-    //   const receipt = await web3.eth.getTransactionReceipt(txHash);
-      
-    //   if (!receipt) {
-    //     return {
-    //       isValid: false,
-    //       message: '트랜잭션을 찾을 수 없습니다.'
-    //     };
-    //   }
-
-    //   if (!receipt.status) {
-    //     return {
-    //       isValid: false,
-    //       message: '실패한 트랜잭션입니다.'
-    //     };
-    //   }
-
-      // PolicyCreated 이벤트가 있는지 확인
-      // 이벤트 시그니처: PolicyCreated(uint256 indexed policyId, address indexed holder, uint256 indexed productId, uint256 premiumPaid, uint256 coverageAmount)
-    //   const policyCreatedEvent = receipt.logs.find(log => 
-    //     log.topics[0] === web3.utils.keccak256('PolicyCreated(uint256,address,uint256,uint256,uint256)')
-    //   );
-
-    //   if (!policyCreatedEvent) {
-    //     return {
-    //       isValid: false,
-    //       message: '보험 가입 트랜잭션이 아닙니다.'
-    //     };
-    //   }
-
-    //   return { isValid: true };
-    // } catch (error) {
-    //   console.error('트랜잭션 검증 실패:', error);
-    //   return {
-    //     isValid: false,
-    //     message: '트랜잭션 검증 중 오류가 발생했습니다.'
-    //   };
-    // }
   
 
   /**
@@ -253,7 +215,7 @@ class ClaimService {
    */
   async validateNFTOwnership(walletAddr, nftAddr, nftId) {
     try {
-      const web3 = web3Client.getWeb3();
+      const provider = ethersClient.getProvider();
       
       // ERC721 표준 ownerOf 함수 ABI 정의
       const erc721ABI = [
@@ -267,8 +229,8 @@ class ClaimService {
       ];
 
       // NFT 컨트랙트 인스턴스 생성 및 소유자 조회
-      const nftContract = new web3.eth.Contract(erc721ABI, nftAddr);
-      const owner = await nftContract.methods.ownerOf(nftId).call();
+      const nftContract = new ethers.Contract(nftAddr, erc721ABI, provider);
+      const owner = await nftContract.ownerOf(nftId);
 
       // 대소문자 구분 없이 주소 비교
       if (owner.toLowerCase() !== walletAddr.toLowerCase()) {
@@ -311,34 +273,34 @@ class ClaimService {
    */
   async extractPolicyFromTx(txHash) {
     try {
-      const web3 = web3Client.getWeb3();
-      const receipt = await web3.eth.getTransactionReceipt(txHash);
+      const provider = ethersClient.getProvider();
+      const receipt = await provider.getTransactionReceipt(txHash);
       
       // PolicyCreated 이벤트 시그니처 생성 및 로그에서 이벤트 찾기
       // 이벤트 구조: PolicyCreated(uint256 indexed policyId, address indexed holder, uint256 indexed productId, uint256 premiumPaid, uint256 coverageAmount)
-      const eventSignature = web3.utils.keccak256('PolicyCreated(uint256,address,uint256,uint256,uint256)');
+      const eventSignature = ethers.id('PolicyCreated(uint256,address,uint256,uint256,uint256)');
       const policyCreatedEvent = receipt.logs.find(log => log.topics[0] === eventSignature);
 
       if (policyCreatedEvent) {
         // indexed 파라미터들 (topics 배열에서 추출)
         // topics[0]: 이벤트 시그니처, topics[1~3]: indexed 파라미터들
-        const policyId = web3.utils.hexToNumber(policyCreatedEvent.topics[1]);
+        const policyId = parseInt(policyCreatedEvent.topics[1], 16);
         const holder = '0x' + policyCreatedEvent.topics[2].slice(26); // address는 32바이트에서 뒤 20바이트만 사용
-        const productId = web3.utils.hexToNumber(policyCreatedEvent.topics[3]);
+        const productId = parseInt(policyCreatedEvent.topics[3], 16);
         
         // non-indexed 파라미터들 (data 필드에서 ABI 디코딩)
         // premiumPaid, coverageAmount는 indexed가 아니므로 data에서 추출
-        const decodedData = web3.eth.abi.decodeParameters(
-          ['uint256', 'uint256'], // [premiumPaid, coverageAmount]
-          policyCreatedEvent.data
-        );
+        const iface = new ethers.Interface([
+          'event PolicyCreated(uint256 indexed policyId, address indexed holder, uint256 indexed productId, uint256 premiumPaid, uint256 coverageAmount)'
+        ]);
+        const decodedData = iface.parseLog(policyCreatedEvent);
 
         return {
           policyId: policyId,
           holder: holder,
           productId: productId,
-          premiumPaid: decodedData[0],    // Wei 단위 (BigNumber 문자열)
-          coverageAmount: decodedData[1]  // Wei 단위 (BigNumber 문자열)
+          premiumPaid: decodedData.args.premiumPaid.toString(),    // Wei 단위 (BigNumber 문자열)
+          coverageAmount: decodedData.args.coverageAmount.toString()  // Wei 단위 (BigNumber 문자열)
         };
       }
 
@@ -377,24 +339,25 @@ class ClaimService {
         throw new Error('Payout 컨트랙트가 초기화되지 않았습니다.');
       }
 
-      const web3 = web3Client.getWeb3();
-
-      // Payout.approveAndPay() 함수 호출을 위한 트랜잭션 데이터 생성
-      const transaction = {
-        to: this.payoutContract.options.address,
-        data: this.payoutContract.methods.approveAndPay(
-          policyId,
-          beneficiary,
-          amount  // Wei 단위 (문자열 또는 숫자)
-        ).encodeABI()
-      };
-
       console.log('💰 Payout.approveAndPay() 실행 중...', { policyId, beneficiary, amount });
-      const result = await web3Client.sendTransaction(transaction);
+
+      // Payout.approveAndPay() 함수 호출 (ethers.js 방식)
+      const tx = await this.payoutContract.approveAndPay(
+        policyId,
+        beneficiary,
+        amount  // Wei 단위 (문자열 또는 숫자)
+      );
+
+      console.log('📤 트랜잭션 전송 완료:', tx.hash);
+
+      // 트랜잭션 확인 대기
+      const receipt = await tx.wait();
+      console.log('✅ 트랜잭션 확인 완료:', receipt.hash);
       
       return {
         success: true,
-        transactionHash: result.transactionHash,
+        transactionHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
         message: '청구 승인 및 지급 완료'
       };
 
@@ -415,50 +378,73 @@ class ClaimService {
   /**
    * 컨트랙트 에러 메시지 파싱
    * 
-   * @description Web3.js에서 발생하는 컨트랙트 에러를 분석하여
+   * @description ethers.js에서 발생하는 컨트랙트 에러를 분석하여
    * 사용자가 이해하기 쉬운 한국어 메시지로 변환합니다.
    * 
-   * @param {Error} error - Web3.js에서 발생한 에러 객체
+   * @param {Error} error - ethers.js에서 발생한 에러 객체
    * @returns {string} 파싱된 사용자 친화적 에러 메시지
    * 
    * @example
    * try {
-   *   await contract.methods.someFunction().send();
+   *   await contract.activate(policyId);
    * } catch (error) {
    *   const message = parseContractError(error);
-   *   console.log(message); // "잘못된 주소입니다."
+   *   console.log(message); // "권한이 없습니다."
    * }
    */
   parseContractError(error) {
     const errorMsg = error.message || error.toString();
     
-    // Solidity revert 메시지 및 Web3.js 에러 패턴 매칭
+    console.log('🔍 에러 메시지 파싱:', errorMsg);
+    
+    // Solidity Custom Error 및 ethers.js 에러 패턴 매칭
     if (errorMsg.includes('ZeroAddress')) {
       return '잘못된 주소입니다.';
     }
     if (errorMsg.includes('InvalidAmount')) {
       return '잘못된 금액입니다.';
     }
-    if (errorMsg.includes('NotAuthorized')) {
-      return '권한이 없습니다.';
+    if (errorMsg.includes('NotAuthorized') || errorMsg.includes('OwnableUnauthorizedAccount')) {
+      return '권한이 없습니다. 관리자만 실행할 수 있습니다.';
     }
     if (errorMsg.includes('NotActive')) {
       return '활성 상태가 아닌 정책입니다.';
     }
+    if (errorMsg.includes('NotPending')) {
+      return 'Pending 상태가 아닌 정책입니다.';
+    }
+    if (errorMsg.includes('AlreadyActive')) {
+      return '이미 활성화된 정책입니다.';
+    }
     if (errorMsg.includes('AlreadyPaid')) {
       return '이미 지급된 정책입니다.';
+    }
+    if (errorMsg.includes('TokenNotSet')) {
+      return 'NFT 토큰이 설정되지 않았습니다.';
     }
     if (errorMsg.includes('EnforcedPause')) {
       return '컨트랙트가 일시정지 상태입니다.';
     }
+    if (errorMsg.includes('ReentrancyGuardReentrantCall')) {
+      return '재진입 공격이 감지되었습니다.';
+    }
     if (errorMsg.includes('insufficient funds')) {
-      return 'Treasury 잔액이 부족합니다.';
+      return '잔액이 부족합니다.';
     }
     if (errorMsg.includes('gas')) {
       return '가스 한도를 초과했습니다.';
     }
-    if (errorMsg.includes('revert')) {
-      return '트랜잭션이 되돌려졌습니다.';
+    if (errorMsg.includes('nonce too low')) {
+      return '논스 값이 너무 낮습니다.';
+    }
+    if (errorMsg.includes('replacement transaction underpriced')) {
+      return '대체 트랜잭션의 가스 가격이 너무 낮습니다.';
+    }
+    if (errorMsg.includes('network changed')) {
+      return '네트워크가 변경되었습니다.';
+    }
+    if (errorMsg.includes('user rejected')) {
+      return '사용자가 트랜잭션을 거부했습니다.';
     }
     
     // 매칭되는 패턴이 없는 경우 기본 에러 메시지 반환
