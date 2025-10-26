@@ -6,10 +6,12 @@ export interface ProductCoverage {
 export interface Product {
   id: number;
   name: string;
-  tier: 'BASIC' | 'PREMIUM' | 'ULTIMATE';
+  tier: "BASIC" | "PREMIUM" | "ULTIMATE";
   description: string;
   coverage: ProductCoverage;
   premiumRate: number;
+  features?: string[];
+  color?: string;
   createdAt: string;
   updatedAt: string;
 }
