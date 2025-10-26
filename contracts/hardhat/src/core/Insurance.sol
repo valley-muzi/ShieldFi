@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
 
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
@@ -29,6 +29,17 @@ contract Insurance is Ownable2Step, Pausable, ReentrancyGuard {
     uint256 public nextPolicyId;
     mapping(uint256 => Policy) private _policies;
 
+    // ====== [추가] 상품별 요율/활성 상태 ======
+    struct Product {
+        bool active;           // 판매 가능 여부
+        uint16 premiumBps;     // 보험료율(basis points, 만분율). 예: 150 = 1.50%
+    }
+    mapping(uint256 => Product) private _products;
+
+    // ====== [추가] 커스텀 에러 (이 파일 한정, 이름 충돌 방지 위해 접두어 사용) ======
+    error ErrProductInactive(uint256 productId);
+    error ErrInsufficientPremium(uint256 required, uint256 paid);
+
     // ===== 구성요소 주입 =====
     constructor(address treasury_, address policyNFT_) Ownable(msg.sender) {
         if (treasury_ == address(0) || policyNFT_ == address(0)) revert ZeroAddress();
@@ -50,6 +61,28 @@ contract Insurance is Ownable2Step, Pausable, ReentrancyGuard {
     function pause() external onlyOwner { _pause(); }
     function unpause() external onlyOwner { _unpause(); }
 
+    // ====== [추가] 상품 관리 ======
+    /// @dev 상품 등록/업데이트. premiumBps는 만분율(예: 150=1.5%)
+    function setProduct(uint256 productId, uint16 premiumBps, bool active) external onlyOwner {
+        _products[productId] = Product({ active: active, premiumBps: premiumBps });
+    }
+
+    function setProductActive(uint256 productId, bool active) external onlyOwner {
+        _products[productId].active = active;
+    }
+
+    function setProductPremiumBps(uint256 productId, uint16 premiumBps) external onlyOwner {
+        _products[productId].premiumBps = premiumBps;
+    }
+
+    /// @notice [추가] 온체인 보험료 견적
+    function quotePremium(uint256 productId, uint256 coverageAmount) public view returns (uint256) {
+        Product memory prod = _products[productId];
+        if (!prod.active) revert ErrProductInactive(productId);
+        // coverage * bps / 10_000  (만분율)
+        return (coverageAmount * uint256(prod.premiumBps)) / 10_000;
+    }
+
     // ===== 가입(프리미엄 납부 동시) =====
     /// @notice 가입 신청 접수. msg.value 전체가 premium으로 납부되며 Treasury에 즉시 입금됨.
     /// @param productId 프론트/백엔드 식별용 상품 ID
@@ -62,8 +95,12 @@ contract Insurance is Ownable2Step, Pausable, ReentrancyGuard {
         whenNotPaused
         returns (uint256 policyId)
     {
-        if (msg.value == 0) revert InvalidAmount();
         if (coverageAmount == 0) revert InvalidAmount();
+
+        // [추가] 필수 보험료 계산 및 검증
+        uint256 requiredPremium = quotePremium(productId, coverageAmount);
+        if (requiredPremium == 0) revert InvalidAmount(); // 방어적
+        if (msg.value < requiredPremium) revert ErrInsufficientPremium(requiredPremium, msg.value);
 
         policyId = nextPolicyId++;
         Policy storage p = _policies[policyId];
