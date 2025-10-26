@@ -1,13 +1,23 @@
-@"
+// src/routes/index.js
 import { Router } from 'express';
-import auth from './auth.routes.js';
-import policy from './policy.routes.js';
-import claim from './claim.routes.js';
+import productRouter from './product.routes.js';
+import claimRouter from './claim.routes.js';
 
-const router = Router();
-router.use('/auth', auth);
-router.use('/policy', policy);
-router.use('/claim', claim);
+const r = Router();
 
-export default router;
-"@ | Set-Content src/routes/index.js
+// product API 연결
+r.use('/products', productRouter);
+
+// claim API 연결
+r.use('/claim', claimRouter);
+
+// 기존 라우트
+r.post('/login', (req, res) => {
+  res.json({ ok: true });
+});
+
+r.post('/register', (req, res) => {
+  res.json({ ok: true });
+});
+
+export default r;
