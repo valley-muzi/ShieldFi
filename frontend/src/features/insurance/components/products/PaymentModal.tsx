@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/features/com
 import { Button } from '@/features/common/components/button';
 import { Card } from '@/features/common/components/card';
 import { useNexus } from '@avail-project/nexus-widgets';
-import { ArrowRight, CreditCard, ArrowLeftRight, Zap } from 'lucide-react';
+import { ArrowRight, ArrowLeftRight, Zap } from 'lucide-react';
 import BridgePayment from '@/features/bridge/components/BridgePayment';
 import SwapPayment from '@/features/swap/components/SwapPayment';
 
@@ -31,11 +31,11 @@ export default function PaymentModal({
 }: PaymentModalProps) {
   const { provider } = useNexus();
   const isConnected = !!provider;
-  const walletAddress = '0x...'; // 지갑 주소는 별도로 관리
+  const walletAddress = '0x...'; // Wallet address managed separately
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 모달이 열릴 때 상태 초기화
+  // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setSelectedMethod(null);
@@ -45,7 +45,7 @@ export default function PaymentModal({
 
   const handlePayment = async (method: PaymentMethod) => {
     if (!isConnected) {
-      alert('지갑을 먼저 연결해주세요.');
+      alert('Please connect wallet first.');
       return;
     }
 
@@ -53,39 +53,34 @@ export default function PaymentModal({
   };
 
   const handlePaymentSuccess = () => {
-    onPaymentSuccess();
+    // Close modal
+    onClose();
+    // Navigate to completion screen
+    // onPaymentSuccess();
   };
 
   const handlePaymentError = (error: string) => {
-    alert(`결제에 실패했습니다: ${error}`);
+    alert(`Payment failed: ${error}`);
   };
 
-  // 이전 단계로 돌아가기
+  // Go back to method selection
   const handleBackToMethodSelection = () => {
     setSelectedMethod(null);
   };
 
   const paymentMethods = [
     {
-      id: 'direct' as PaymentMethod,
-      name: '직접 결제',
-      description: '현재 체인의 토큰으로 직접 결제',
-      icon: CreditCard,
-      color: 'from-blue-500 to-blue-600',
-      disabled: false
-    },
-    {
       id: 'bridge' as PaymentMethod,
-      name: '브릿지 결제',
-      description: '다른 체인에서 토큰을 브릿지하여 결제',
+      name: 'Bridge Payment',
+      description: 'Bridge tokens from another chain to pay',
       icon: ArrowLeftRight,
       color: 'from-purple-500 to-purple-600',
       disabled: false
     },
     {
       id: 'swap' as PaymentMethod,
-      name: '스왑 결제',
-      description: '다른 토큰을 스왑하여 결제',
+      name: 'Swap Payment',
+      description: 'Swap other tokens to pay',
       icon: Zap,
       color: 'from-green-500 to-green-600',
       disabled: false
@@ -97,12 +92,12 @@ export default function PaymentModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            보험 가입 결제
+            Insurance Payment
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* 상품 정보 */}
+          {/* Product Information */}
           <Card className="p-4 bg-slate-50">
             <div className="flex justify-between items-center">
               <div>
@@ -111,31 +106,16 @@ export default function PaymentModal({
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-teal-600">{product.premium}</p>
-                <p className="text-sm text-slate-500">연간 보험료</p>
+                <p className="text-sm text-slate-500">Annual Premium</p>
               </div>
             </div>
           </Card>
 
-          {/* 지갑 연결 상태 */}
-          {!isConnected ? (
-            <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 font-medium">
-                지갑을 먼저 연결해주세요.
-              </p>
-            </div>
-          ) : (
-            <div className="text-center p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-600 font-medium">
-                지갑 연결됨: {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
-              </p>
-            </div>
-          )}
-
-          {/* 결제 방식 선택 */}
+          {/* Payment Method Selection */}
           {!selectedMethod && (
             <div className="space-y-4">
-              <h4 className="font-semibold text-lg">결제 방식 선택</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <h4 className="font-semibold text-lg">If you don't have enough ETH, use Bridge/Swap!</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {paymentMethods.map((method) => {
                   const Icon = method.icon;
                   return (
@@ -160,7 +140,7 @@ export default function PaymentModal({
             </div>
           )}
 
-          {/* 결제 컴포넌트 */}
+          {/* Payment Components */}
           {selectedMethod === 'bridge' && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
@@ -171,13 +151,13 @@ export default function PaymentModal({
                   className="flex items-center gap-2"
                 >
                   <ArrowRight className="w-4 h-4 rotate-180" />
-                  뒤로
+                  Back
                 </Button>
-                <h4 className="font-semibold text-lg">브릿지 결제</h4>
+                <h4 className="font-semibold text-lg">Bridge Payment</h4>
               </div>
               <BridgePayment
-                amount="2.5"
-                token="USDC"
+                amount="0.0015"
+                token="ETH"
                 onSuccess={handlePaymentSuccess}
                 onError={handlePaymentError}
               />
@@ -194,12 +174,12 @@ export default function PaymentModal({
                   className="flex items-center gap-2"
                 >
                   <ArrowRight className="w-4 h-4 rotate-180" />
-                  뒤로
+                  Back
                 </Button>
-                <h4 className="font-semibold text-lg">스왑 결제</h4>
+                <h4 className="font-semibold text-lg">Swap Payment</h4>
               </div>
               <SwapPayment
-                amount="2.5"
+                amount="0.0015"
                 fromToken="ETH"
                 toToken="USDC"
                 onSuccess={handlePaymentSuccess}
@@ -208,40 +188,23 @@ export default function PaymentModal({
             </div>
           )}
 
-          {selectedMethod === 'direct' && (
+          {/* Insurance Signup Button */}
+          {selectedMethod && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Button
-                  onClick={handleBackToMethodSelection}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <ArrowRight className="w-4 h-4 rotate-180" />
-                  뒤로
-                </Button>
-                <h4 className="font-semibold text-lg">직접 결제</h4>
-              </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-medium text-blue-900 mb-2">직접 결제</h4>
-                <p className="text-blue-700 text-sm">
-                  현재 체인에서 직접 {product.premium}를 결제합니다.
+                <h4 className="font-medium text-blue-900 mb-2">Complete Insurance Signup</h4>
+                <p className="text-blue-700 text-sm mb-4">
+                  Complete your insurance signup process
                 </p>
-              </div>
-              <div className="flex gap-4">
                 <Button
-                  onClick={onClose}
-                  variant="outline"
-                  className="flex-1"
+                  onClick={() => {
+                    // Navigate to insurance signup completion page
+                    onClose();
+                    onPaymentSuccess();
+                  }}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90 text-white"
                 >
-                  취소
-                </Button>
-                <Button
-                  onClick={handlePaymentSuccess}
-                  disabled={!isConnected}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90 text-white"
-                >
-                  직접 결제
+                  Complete Insurance Signup
                 </Button>
               </div>
             </div>

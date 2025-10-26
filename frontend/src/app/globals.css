@@ -192,3 +192,13 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Hide Nexus SDK notifications */
+[data-nexus-notification],
+.nexus-notification,
+div[style*="position: fixed"][style*="z-index: 9999"],
+div[style*="background-color: red"][style*="color: white"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}

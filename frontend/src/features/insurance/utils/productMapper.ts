@@ -37,42 +37,56 @@ export class ProductMapper {
       }
     };
 
+    // tier에 따른 설명 매핑
+    const getDescriptionByTier = (tier: string) => {
+      switch (tier) {
+        case 'BASIC':
+          return 'Basic protection insurance product that provides coverage for small-scale losses.';
+        case 'PREMIUM':
+          return 'Premium protection insurance product that provides coverage for medium-scale losses.';
+        case 'ULTIMATE':
+          return 'Ultimate protection insurance product that provides coverage for large-scale losses.';
+        default:
+          return 'Basic protection insurance product.';
+      }
+    };
+
     // tier에 따른 기능 목록
     const getFeaturesByTier = (tier: string) => {
       switch (tier) {
         case 'BASIC':
           return [
-            '기본 보호 기능',
-            '소액 손실 보장',
-            '24/7 모니터링',
-            '기본 지원'
+            'Basic Protection Features',
+            'Small Loss Coverage',
+            '24/7 Monitoring',
+            'Basic Support'
           ];
         case 'PREMIUM':
           return [
-            '중간 규모 손실 보장',
-            '고급 보호 기능',
-            '우선 지원',
-            '실시간 알림',
-            '전문가 상담'
+            'Medium Scale Loss Coverage',
+            'Advanced Protection Features',
+            'Priority Support',
+            'Real-time Alerts',
+            'Expert Consultation'
           ];
         case 'ULTIMATE':
           return [
-            '대규모 손실 보장',
-            '최고급 보호 기능',
-            'VIP 지원',
-            '실시간 모니터링',
-            '전담 매니저',
-            '우선 처리'
+            'Large Scale Loss Coverage',
+            'Premium Protection Features',
+            'VIP Support',
+            'Real-time Monitoring',
+            'Dedicated Manager',
+            'Priority Processing'
           ];
         default:
-          return ['기본 보호 기능'];
+          return ['Basic Protection Features'];
       }
     };
 
     return {
       id: `product-${apiProduct.id}`,
       name: apiProduct.name,
-      description: apiProduct.description,
+      description: getDescriptionByTier(apiProduct.tier),
       coverage: formatCoverage(apiProduct.coverage.min, apiProduct.coverage.max),
       premium: calculatePremium(apiProduct.coverage.max, apiProduct.premiumRate),
       features: getFeaturesByTier(apiProduct.tier),

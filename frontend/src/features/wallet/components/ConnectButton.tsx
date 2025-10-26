@@ -24,7 +24,7 @@ export default function ConnectButton({ className }: ConnectButtonProps) {
         // 지갑 연결
         const eth = (window as any)?.ethereum;
         if (!eth) {
-          alert('EIP-1193 지갑을 설치해주세요 (예: MetaMask)');
+          alert('Please install an EIP-1193 wallet (e.g., MetaMask)');
           return;
         }
         
@@ -35,8 +35,8 @@ export default function ConnectButton({ className }: ConnectButtonProps) {
         await initializeSdk(eth);
       }
     } catch (error) {
-      console.error('지갑 연결/해제 실패:', error);
-      alert(isConnected ? '지갑 연결 해제에 실패했습니다.' : '지갑 연결에 실패했습니다.');
+      console.error('Wallet connect/disconnect failed:', error);
+      alert(isConnected ? 'Failed to disconnect wallet.' : 'Failed to connect wallet.');
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +49,7 @@ export default function ConnectButton({ className }: ConnectButtonProps) {
       className={className}
     >
       {isLoading 
-        ? (isConnected ? '연결 해제 중...' : '연결 중...')
+        ? 'Connecting...'
         : isConnected 
         ? 'Disconnect' 
         : 'Connect Wallet'

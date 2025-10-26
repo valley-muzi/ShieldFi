@@ -29,7 +29,7 @@ export default function ProductsPage() {
         const displayProducts = ProductMapper.mapApiProductsToDisplay(apiProducts);
         setProducts(displayProducts);
       } catch (err) {
-        setError(err instanceof Error ? err.message : '상품을 불러오는데 실패했습니다.');
+        setError(err instanceof Error ? err.message : 'Failed to load products.');
         console.error('Error fetching products:', err);
       } finally {
         setIsLoading(false);
@@ -47,23 +47,10 @@ export default function ProductsPage() {
   const handlePaymentSuccess = () => {
     setIsPaymentModalOpen(false);
     
-    // selectedProduct가 null인 경우 처리
-    if (!selectedProduct) {
-      console.error('Selected product is null');
-      return;
-    }
-    
-    // 정책 정보를 URL 파라미터로 전달하여 success 페이지로 이동
-    const params = new URLSearchParams({
-      id: `POL-${Date.now()}-${selectedProduct.id}`,
-      type: selectedProduct.name,
-      coverage: selectedProduct.coverage,
-      premium: selectedProduct.premium,
-      duration: "1 year",
-    });
-
-    router.push(`/success?${params.toString()}`);
+    // Navigate to insurance signup completion page
+    router.push('/insurance-success');
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Main Content */}
@@ -88,7 +75,7 @@ export default function ProductsPage() {
             <div className="flex justify-center items-center py-16">
               <div className="flex items-center gap-3">
                 <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
-                <span className="text-lg text-slate-600">상품을 불러오는 중...</span>
+                <span className="text-lg text-slate-600">Loading products...</span>
               </div>
             </div>
           )}
@@ -97,14 +84,14 @@ export default function ProductsPage() {
           {error && (
             <div className="text-center py-16">
               <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-                <h3 className="text-lg font-semibold text-red-800 mb-2">오류 발생</h3>
+                <h3 className="text-lg font-semibold text-red-800 mb-2">Error Occurred</h3>
                 <p className="text-red-600 mb-4">{error}</p>
                 <Button
                   onClick={() => window.location.reload()}
                   variant="outline"
                   className="border-red-300 text-red-700 hover:bg-red-50"
                 >
-                  다시 시도
+                  Try Again
                 </Button>
               </div>
             </div>

@@ -1,6 +1,10 @@
 import { NexusSDK } from '@avail-project/nexus-core';
 
-export const nexusSDK = new NexusSDK({ network: 'testnet' });
+export const nexusSDK = new NexusSDK({ 
+  network: 'testnet',
+  disableNotifications: true,
+  silent: true
+});
 
  
 // Thin wrapper that calls nexusSDK.isInitialized() from the SDK

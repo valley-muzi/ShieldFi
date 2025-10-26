@@ -66,9 +66,19 @@ export default function PolicyDetailPage({
 
           {/* Split Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-            {/* Left Section - Policy Information */}
+            {/* Left Section - Insurance Certificate */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <h2 className="text-2xl mb-6 text-slate-900">Insurance Certificate</h2>
+              <NFTCertificate policy={policy} />
+            </motion.div>
+
+            {/* Right Section - Policy Information */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
@@ -76,16 +86,6 @@ export default function PolicyDetailPage({
                 Policy Information
               </h2>
               <PolicyCard policy={policy} />
-            </motion.div>
-
-            {/* Right Section - NFT Certificate */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <h2 className="text-2xl mb-6 text-slate-900">NFT Certificate</h2>
-              <NFTCertificate policy={policy} />
             </motion.div>
           </div>
 
