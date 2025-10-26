@@ -3,13 +3,13 @@
   "rpc": "https://eth-sepolia.g.alchemy.com/v2/0KnGD2ySjuK_RLLbX_XKE",
   "contracts": {
     "Treasury": {
-      "address": "0x2b96c91F3176311e353E24D5A03e05F2495B96aA"
+      "address": "0x6b4ac62CFd9C754E21c1f1B1d69c69539d190274"
     },
     "PolicyNFT": {
-      "address": "0x7176E34E90c6e9bE17073C36eef650A42829798b"
+      "address": "0x64650Fa048bB79dECA8f7828c1632cDf4f0222Dd"
     },
     "Insurance": {
-      "address": "0x724de3223e39E3421924F27BB2F8A82832AA89e3"
+      "address": "0x81265Ab23677fA9E119853b2a04e9498fB163db1"
     }
   }
 }
